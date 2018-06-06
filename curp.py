@@ -110,7 +110,8 @@ class Curp:
                 or name == 'las'
                 or name == 'la'
                 or name == 'el'
-                or name == 'y'):
+                or name == 'y'
+                or name.strip() == ''):
                 return True
 
             return False
@@ -204,3 +205,22 @@ class Curp:
         curp = curp.replace(u'Ñ', 'X')
 
         return curp
+
+
+if __name__ == '__main__':
+    curp = ''
+    nombres=''
+    apellido_paterno=''
+    apellido_materno=''
+    fecha_nacimiento='' # YYYY-MM-DD
+    genero='' # H o M
+    num_entidad=str(31) # 1-88
+
+    try:
+        curp = Curp(nombres=nombres,apellido_paterno=apellido_paterno,
+            apellido_materno=apellido_materno, fecha_nacimiento=fecha_nacimiento,
+            genero=genero, num_entidad=num_entidad).curp
+    except Exception, e:
+        print(u"[ERROR]: {0}".format(str(e)))
+
+    print curp
