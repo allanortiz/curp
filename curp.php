@@ -15,15 +15,15 @@ class Curp
         $this->consonants = preg_split('//u', 'BCDFGHJKLMNÑPQRSTVWXYZ', -1, PREG_SPLIT_NO_EMPTY);
         $this->entidades  = [
             #'0': {'nombre':'?', 'abrev': ''},
-            '1'  => ['nombre' => 'AGUASCALIENTES',      'abrev' => 'AS'],
-            '2'  => ['nombre' => 'BAJA CALIFORNIA',     'abrev' => 'BC'],
-            '3'  => ['nombre' => 'BAJA CALIFORNIA SUR', 'abrev' => 'BS'],
-            '4'  => ['nombre' => 'CAMPECHE',            'abrev' => 'CC'],
-            '5'  => ['nombre' => 'COAHUILA',            'abrev' => 'CL'],
-            '6'  => ['nombre' => 'COLIMA',              'abrev' => 'CM'],
-            '7'  => ['nombre' => 'CHIAPAS',             'abrev' => 'CS'],
-            '8'  => ['nombre' => 'CHIHUAHUA',           'abrev' => 'CH'],
-            '9'  => ['nombre' => 'DISTRITO FEDERAL',    'abrev' => 'DF'],
+            '01' => ['nombre' => 'AGUASCALIENTES',      'abrev' => 'AS'],
+            '02' => ['nombre' => 'BAJA CALIFORNIA',     'abrev' => 'BC'],
+            '03' => ['nombre' => 'BAJA CALIFORNIA SUR', 'abrev' => 'BS'],
+            '04' => ['nombre' => 'CAMPECHE',            'abrev' => 'CC'],
+            '05' => ['nombre' => 'COAHUILA',            'abrev' => 'CL'],
+            '06' => ['nombre' => 'COLIMA',              'abrev' => 'CM'],
+            '07' => ['nombre' => 'CHIAPAS',             'abrev' => 'CS'],
+            '08' => ['nombre' => 'CHIHUAHUA',           'abrev' => 'CH'],
+            '09' => ['nombre' => 'DISTRITO FEDERAL',    'abrev' => 'DF'],
             '10' => ['nombre' => 'DURANGO',             'abrev' => 'DG'],
             '11' => ['nombre' => 'GUANAJUATO',          'abrev' => 'GT'],
             '12' => ['nombre' => 'GUERRERO',            'abrev' => 'GR'],
@@ -54,14 +54,14 @@ class Curp
         $this->unwanted_array = array('Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
                             'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', /*'Ñ'=>'N',*/ 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
                             'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
-                            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+                            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', /*'ñ'=>'n',*/ 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
                             'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
-        $this->nombres = $this->cambiar_letras_indeseadas($nombres);
-        $this->apellido_paterno = $this->cambiar_letras_indeseadas($apellido_paterno);
-        $this->apellido_materno = $this->cambiar_letras_indeseadas($apellido_materno);
-        $this->fecha_nacimiento = $this->cambiar_letras_indeseadas($fecha_nacimiento);
-        $this->genero = strtoupper($genero);
-        $this->num_entidad = $num_entidad;
+        $this->nombres = $this->cambiar_letras_indeseadas(trim($nombres));
+        $this->apellido_paterno = $this->cambiar_letras_indeseadas(trim($apellido_paterno));
+        $this->apellido_materno = $this->cambiar_letras_indeseadas(trim($apellido_materno));
+        $this->fecha_nacimiento = $this->cambiar_letras_indeseadas(trim($fecha_nacimiento));
+        $this->genero = mb_strtoupper(trim($genero));
+        $this->num_entidad = trim($num_entidad);
         $this->curp = $this->generar(
             $this->nombres, 
             $this->apellido_paterno,
@@ -127,7 +127,7 @@ class Curp
      */
     function es_nombre_invalido($name)
     {
-        switch(strtoupper($name))
+        switch(mb_strtoupper($name))
         {
             case 'DA':
             case 'DAS':
@@ -162,12 +162,12 @@ class Curp
      */
     function cambiar_letras_indeseadas($palabra)
     {
-        $palabra = strtoupper($palabra);
+        $palabra = mb_strtoupper($palabra);
         $array   = preg_split('//u', mb_substr($palabra, 0, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
 
         for ($i = 0; $i < count($array); $i++)
         {
-            $array[$i] = strtoupper(strtr($array[$i], $this->unwanted_array));
+            $array[$i] = mb_strtoupper(strtr($array[$i], $this->unwanted_array));
         }
 
         return implode("", $array);
@@ -365,12 +365,12 @@ class Curp
         }
 
         /**
-         * Primer caractér alfabético del primer apellido.
-         * Si el caractér es la letra "Ñ", entonces se
+         * Primer carácter alfabético del primer apellido.
+         * Si el carácter es la letra "Ñ", entonces se
          * asigna la letra "X" en su lugar.
          */
         $array_ap = preg_split('//u', mb_substr($apellido_paterno, 0, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
-        $curp     = strtoupper($array_ap[0]) === 'Ñ' ? 'X' 
+        $curp     = mb_strtoupper($array_ap[0]) === 'Ñ' ? 'X' 
                                                      : $array_ap[0];
                      
         /**
@@ -413,14 +413,14 @@ class Curp
 
         /**
          * Primer carácter alfabético del segundo apellido.
-         * Si el caractér es la letra "Ñ", entonces se
+         * Si el carácter es la letra "Ñ", entonces se
          * asigna la letra "X" en su lugar.
          * Si no tine segundo apellido entonces asigna
          * la letra "X" en su lugar.
          */
         $array_am = preg_split('//u', mb_substr($apellido_materno, 0, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
 
-        if ( ! empty($array_am) && strtoupper($array_am[0]) !== 'Ñ')
+        if ( ! empty($array_am) && mb_strtoupper($array_am[0]) !== 'Ñ')
         {
             $curp = $curp . $array_am[0];
         }
@@ -436,7 +436,7 @@ class Curp
         $primer_nombre = preg_split('//u', mb_substr($lista_nombres[0], 0, 1, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
         $primer_nombre_primer_caracter = $primer_nombre[0];
 
-        $curp = $curp . (strtoupper($primer_nombre_primer_caracter) === 'Ñ' ? 'X' 
+        $curp = $curp . (mb_strtoupper($primer_nombre_primer_caracter) === 'Ñ' ? 'X' 
                                                                   : $primer_nombre_primer_caracter);
 
         /**
@@ -444,18 +444,17 @@ class Curp
          */
         $digits = substr(strval($anio_nacimiento), strlen($anio_nacimiento) - 2);
         $curp   = $curp . ($digits);
-
         
         /**
          * Dos dígitos del mes de nacimiento.
          */
         $curp = $curp . $mes_nacimiento;
-        
+
         /**
          * Dos dígitos del día de nacimiento.
          */
         $curp = $curp . $dia_nacimiento;
-        
+
         /**
          * Carácter H o M para indecar el género Hombre o Mujer segun corresponda.
          */
@@ -479,8 +478,7 @@ class Curp
          * Primer consonante no inicial del primer apellido.
          */
         $aux = 'X';
-
-        $array_ap = str_split(substr($apellido_paterno, 1));
+        $array_ap = preg_split('//u', mb_substr($apellido_paterno, 1, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
 
         foreach($array_ap as $letter)
         {
@@ -500,8 +498,9 @@ class Curp
          * Primer consonante no inicial del segundo apellido.
          */
         $aux = 'X';
+        $array_am = preg_split('//u', mb_substr($apellido_materno, 1, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach(str_split(substr($apellido_materno, 1)) as $letter)
+        foreach($array_am as $letter)
         {
             if (in_array($letter, $this->consonants))
             {
@@ -516,9 +515,10 @@ class Curp
         /**
          * Primer consonante no inicial del nombre.
          */
-        $aux = 'X';
+        $aux      = 'X';
+        $primer_nombre_letras = preg_split('//u', mb_substr($lista_nombres[0], 1, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach (str_split(substr($lista_nombres[0], 1)) as $letter)
+        foreach ($primer_nombre_letras as $letter)
         {
             if (in_array($letter, $this->consonants))
             {
@@ -536,15 +536,13 @@ class Curp
          */
         $curp = $curp . (intval($anio_nacimiento) < 2000 ? '0' : 'A');
 
-        /**
-         * Dígito verificador.
-         */
-        $curp = $curp . $this->digito_verificador(strtoupper($curp));
+        // Dígito verificador.
+        $curp = $curp . $this->digito_verificador(mb_strtoupper($curp));
 
         /**
          * Reemplaza 'Ñ' con 'X'.
          */
-        $curp = strtoupper($curp);
+        $curp = mb_strtoupper($curp);
         $curp = str_replace('Ñ', 'X', $curp);
 
         /**
@@ -553,5 +551,432 @@ class Curp
         $curp = $this->cambiar_palabra_altisonante($curp);
 
         return $curp;
+    }
+
+    /**
+     * Comparación de CURPs.
+     * 
+     * Códigos de validación:
+     *      LONGITUD
+     *      AP_PRIMER_CARACTER 
+     *      AP_PRIMER_CARACTER_N
+     *      AP_VOCAL_NO_INICIAL
+     *      ALTISONANTE
+     *      AM_PRIMER_CARACTER
+     *      AM_PRIMER_CARACTER_N
+     *      AM_VACIO
+     *      NOMBRE_PRIMER_CARACTER  
+     *      FECHA_NAC_ANIO
+     *      FECHA_NAC_MES
+     *      FECHA_NAC_DIA
+     *      GENERO                
+     *      ENTIDAD
+     *      AP_CONSONANTE_NO_INICIAL
+     *      AM_CONSONANTE_NO_INICIAL
+     *      NOMBRE_CONSONANTE_NO_INICIAL
+     *      HOMOCLAVE_HASTA_1999 
+     *      HOMOCLAVE_DESDE_2000   
+     *      DIGITO_VERIFICADOR     
+     * 
+     * @param  string $curp           CURP que se comparará con la interna.
+     * @param  Array  $omitir_codigos Arreglo de códigos que no se validarán 
+     *                                al comparar.
+     * @return Array  Diferencias encontradas.
+     */
+    function comparar($curp, $omitir_codigos = [])
+    {
+        $codigos = [
+            "LONGITUD"                 => ["mensaje" => "Longitud de CURP incorrecta. Debe tener 18 caracteres."],
+            "AP_PRIMER_CARACTER"       => ["mensaje" => 'El primer carácter del apellido paterno es incorrecto.'],
+            "AP_PRIMER_CARACTER_N"     => ["mensaje" => 'El primer carácter del apellido paterno debe ser una "X" en vez de "Ñ".'],
+            "AP_VOCAL_NO_INICIAL"      => ["mensaje" => 'La primera vocal no inicial del apellido paterno es incorrecto.'],
+            "ALTISONANTE"              => ["mensaje" => 'La primera vocal no inicial del apellido paterno es incorrecto debido a palabra altisonante.'],
+            "AM_PRIMER_CARACTER"       => ["mensaje" => 'El primer carácter del apellido materno es incorrecto.'],
+            "AM_PRIMER_CARACTER_N"     => ["mensaje" => 'El primer carácter del apellido materno es incorrecto. '
+                                                     . 'Debe ser "X" cuando comience con la letra "Ñ".'],
+            "AM_VACIO"                 => ["mensaje" => 'El primer carácter del apellido materno es incorrecto. '
+                                                     . 'Debe ser "X" cuando no tenga apellido materno.'],
+            "NOMBRE_PRIMER_CARACTER"   => ["mensaje" => "El primer carácter del primer nombre es incorrecto."],
+            "FECHA_NAC_ANIO"           => ["mensaje" => "El año de la fecha de nacimiento es incorrecto."],
+            "FECHA_NAC_MES"            => ["mensaje" => "El mes de la fecha de nacimiento es incorrecto."],
+            "FECHA_NAC_DIA"            => ["mensaje" => "El día de la fecha de nacimiento es incorrecto."],
+            "GENERO"                   => ["mensaje" => 'El género es incorrecto. Debe ser la letra "H" en caso de ser hombre, o la letra "M" en caso de ser mujer.'],
+            "ENTIDAD"                  => ["mensaje" => "La clave de la entidad federativa de nacimiento es incorrecta."],
+            "AP_CONSONANTE_NO_INICIAL" => ["mensaje" => "La primera consonante no inicial del apellido paterno es incorrecta."],
+            "AM_CONSONANTE_NO_INICIAL" => ["mensaje" => "La primera consonante no inicial del apellido materno es incorrecta."],
+            "NOMBRE_CONSONANTE_NO_INICIAL" => ["mensaje" => "La primera consonante no inicial del nombre es incorrecta."],
+            "HOMOCLAVE_HASTA_1999"     => ["mensaje" => "La homoclave es incorrecta. Debe ser un número del 1 al 9 para fechas de nacimiento hasta el año 1999."],
+            "HOMOCLAVE_DESDE_2000"     => ["mensaje" => "La homoclave es incorrecta. Debe ser un carácter de la A a la Z para fechas de nacimiento a partir del año 2000 (alfanumérica)."],
+            "DIGITO_VERIFICADOR"       => ["mensaje" => "El digito verificador es incorrecto. Deber se un número del 1 al 9."],
+        ];
+        $curp                 = mb_strtoupper(trim($curp));
+        $curp_actual          = mb_strtoupper($this->curp);
+        $curp_actual_letras   = preg_split('//u', mb_substr($curp_actual, 0, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
+        $curp_letras          = preg_split('//u', mb_substr($curp, 0, null, 'utf-8'), -1, PREG_SPLIT_NO_EMPTY);
+        $curp_longitud        = strlen($curp);
+        $detalles             = [];
+        // Rellena espacios vacíos, si existiesen, en la
+        // CURP a comparar.
+        $curp_letras          = array_pad($curp_letras, 18, "_");
+        $caracter1_diferente  = $curp_letras[0]  !== $curp_actual_letras[0];
+        $caracter2_diferente  = $curp_letras[1]  !== $curp_actual_letras[1];
+        $caracter3_diferente  = $curp_letras[2]  !== $curp_actual_letras[2];
+        $caracter4_diferente  = $curp_letras[3]  !== $curp_actual_letras[3];
+        $caracter5_diferente  = $curp_letras[4]  !== $curp_actual_letras[4];
+        $caracter6_diferente  = $curp_letras[5]  !== $curp_actual_letras[5];
+        $caracter7_diferente  = $curp_letras[6]  !== $curp_actual_letras[6];
+        $caracter8_diferente  = $curp_letras[7]  !== $curp_actual_letras[7];
+        $caracter9_diferente  = $curp_letras[8]  !== $curp_actual_letras[8];
+        $caracter10_diferente = $curp_letras[9]  !== $curp_actual_letras[9];
+        $caracter11_diferente = $curp_letras[10] !== $curp_actual_letras[10];
+        $caracter12_diferente = $curp_letras[11] !== $curp_actual_letras[11];
+        $caracter13_diferente = $curp_letras[12] !== $curp_actual_letras[12];
+        $caracter14_diferente = $curp_letras[13] !== $curp_actual_letras[13];
+        $caracter15_diferente = $curp_letras[14] !== $curp_actual_letras[14];
+        $caracter16_diferente = $curp_letras[15] !== $curp_actual_letras[15];
+        $caracter17_diferente = $curp_letras[16] !== $curp_actual_letras[16];
+        $caracter18_diferente = $curp_letras[17] !== $curp_actual_letras[17];
+        $valida = true;
+
+        /**
+         * Validación de longitud.
+         */
+        if (!in_array("LONGITUD", $omitir_codigos)
+            && $curp_longitud !== 18)
+        {
+            $array_indices = [];
+
+            if ($curp_longitud < 18)
+            {
+                $array_indices = range($curp_longitud + 1, 18);
+            }
+            else if ($curp_longitud > 18)
+            {
+                $array_indices = range(19, $curp_longitud);
+            }
+
+            $detalles["LONGITUD"] = $codigos["LONGITUD"];
+            $detalles["LONGITUD"]["indices"] = $array_indices;
+
+            $valida = false;
+        }
+
+        /**
+         * Primer carácter alfabético del primer apellido.
+         * Si el carácter es la letra "Ñ", entonces debe
+         * tener asignado la letra "X" en su lugar.
+         * También se verifica palabra altisonante, ya
+         * que esta posición es la que se cambia por 'X'
+         * en caso de haber coincidencia.
+         */
+        if ($caracter1_diferente)
+        {
+            $mensaje = '';
+
+            if (!in_array("AP_PRIMER_CARACTER_N", $omitir_codigos)
+                && $curp_letras[0] === 'Ñ' 
+                && $curp_actual_letras[0] === "X")
+            {
+                $detalles["AP_PRIMER_CARACTER_N"] = $codigos["AP_PRIMER_CARACTER_N"];
+                $detalles["AP_PRIMER_CARACTER_N"]["indices"] = [0];
+                $valida = false;
+            }
+            else if (!in_array("AP_PRIMER_CARACTER", $omitir_codigos))
+            {
+                $detalles["AP_PRIMER_CARACTER"] = $codigos["AP_PRIMER_CARACTER"];
+                $detalles["AP_PRIMER_CARACTER"]["indices"] = [0];
+                $valida = false;
+            }
+        }
+
+        /**
+         * Primer vocal no inicial del primer apellido.
+        */
+        if ($caracter2_diferente)
+        {
+            $mensaje = '';
+
+            if (!in_array("ALTISONANTE", $omitir_codigos)
+                && $curp_actual_letras[1] === "X" 
+                && $this->cambiar_palabra_altisonante($curp) !== $curp)
+            {
+                $detalles["ALTISONANTE"] = $codigos["ALTISONANTE"];
+                $detalles["ALTISONANTE"]["indices"] = [1];
+                $valida = false;
+            }
+            else if (!in_array("AP_VOCAL_NO_INICIAL", $omitir_codigos))
+            {
+                $detalles["AP_VOCAL_NO_INICIAL"] = $codigos["AP_VOCAL_NO_INICIAL"];
+                $detalles["AP_VOCAL_NO_INICIAL"]["indices"] = [1];
+                $valida = false;
+            }
+        }
+
+        /**
+         * Primer carácter alfabético del segundo apellido.
+         * Si el carácter es la letra "Ñ" o si no tine segundo 
+         * apellido, entonces asigna la letra "X" en su lugar.
+         */
+        if ($caracter3_diferente)
+        {
+            $mensaje = '';
+
+            if ($curp_actual_letras[2] === "X")
+            {
+                if (!in_array("AM_VACIO", $omitir_codigos)
+                    && empty($this->apellido_materno))
+                {
+                    $detalles["AM_VACIO"] = $codigos["AM_VACIO"];
+                    $detalles["AM_VACIO"]["indices"] = [2];
+                    $valida = false;
+                }
+                else if (!in_array("AM_PRIMER_CARACTER_N", $omitir_codigos))
+                {
+                    $detalles["AM_PRIMER_CARACTER_N"] = $codigos["AM_PRIMER_CARACTER_N"];
+                    $detalles["AM_PRIMER_CARACTER_N"]["indices"] = [2];
+                    $valida = false;
+                }
+            }
+            else if (!in_array("AM_PRIMER_CARACTER", $omitir_codigos)) 
+            {
+                $detalles["AM_PRIMER_CARACTER"] = $codigos["AM_PRIMER_CARACTER"];
+                $detalles["AM_PRIMER_CARACTER"]["indices"] = [2];
+                $valida = false;
+            }
+        }
+
+        /**
+         * Primer carácter alfabético del primer nombre (en caso de José, María, 
+         * J, J., Ma, Ma., se empleara el segundo nombre si lo hubiera).
+         */
+        if (!in_array("NOMBRE_PRIMER_CARACTER", $omitir_codigos)
+            && $caracter4_diferente)
+        {
+            $detalles["NOMBRE_PRIMER_CARACTER"] = $codigos["NOMBRE_PRIMER_CARACTER"];
+            $detalles["NOMBRE_PRIMER_CARACTER"]["indices"] = [3];
+            $valida = false;
+        }
+
+        /**
+         * Dos últimos dígitos del año de nacimiento.
+         */
+        if (!in_array("FECHA_NAC_ANIO", $omitir_codigos)
+            && ($caracter5_diferente || $caracter6_diferente))
+        {
+            $detalles["FECHA_NAC_ANIO"] = $codigos["FECHA_NAC_ANIO"];
+            $detalles["FECHA_NAC_ANIO"]["indices"] = [4, 5];
+            $valida = false;
+        }
+        
+        /**
+         * Dos dígitos del mes de nacimiento.
+         */
+        if (!in_array("FECHA_NAC_MES", $omitir_codigos)
+            && ($caracter7_diferente || $caracter8_diferente))
+        {
+            $detalles["FECHA_NAC_MES"] = $codigos["FECHA_NAC_MES"];
+            $detalles["FECHA_NAC_MES"]["indices"] = [6, 7];
+            $valida = false;
+        }
+
+        /**
+         * Dos dígitos del día de nacimiento.
+         */
+        if (!in_array("FECHA_NAC_DIA", $omitir_codigos)
+            && ($caracter9_diferente || $caracter10_diferente))
+        {
+            $detalles["FECHA_NAC_DIA"] = $codigos["FECHA_NAC_DIA"];
+            $detalles["FECHA_NAC_DIA"]["indices"] = [8, 9];
+            $valida = false;
+        }
+
+        /**
+         * Carácter H o M para indecar el género Hombre o Mujer segun corresponda.
+         */
+        if (!in_array("GENERO", $omitir_codigos)
+            && $caracter11_diferente)
+        {
+            $detalles["GENERO"] = $codigos["GENERO"];
+            $detalles["GENERO"]["indices"] = [10];
+            $valida = false;
+        }
+
+        /**
+         * Dos caracteres alfabeticos correspondiente a la clave de la entidad
+         * federativa de nacimiento.
+         */
+        if (!in_array("ENTIDAD", $omitir_codigos)
+            && ($caracter12_diferente || $caracter13_diferente))
+        {
+            $detalles["ENTIDAD"] = $codigos["ENTIDAD"];
+            $detalles["ENTIDAD"]["indices"] = [11, 12];
+            $valida = false;
+        }
+
+        /**
+         * Primer consonante no inicial del primer apellido.
+         */
+        if (!in_array("AP_CONSONANTE_NO_INICIAL", $omitir_codigos)
+            && $caracter14_diferente)
+        {
+            $detalles["AP_CONSONANTE_NO_INICIAL"] = $codigos["AP_CONSONANTE_NO_INICIAL"];
+            $detalles["AP_CONSONANTE_NO_INICIAL"]["indices"] = [13];
+            $valida = false;
+        }
+
+        /**
+         * Primer consonante no inicial del segundo apellido.
+         */
+        if (!in_array("AM_CONSONANTE_NO_INICIAL", $omitir_codigos)
+            && $caracter15_diferente)
+        {
+            $detalles["AM_CONSONANTE_NO_INICIAL"] = $codigos["AM_CONSONANTE_NO_INICIAL"];
+            $detalles["AM_CONSONANTE_NO_INICIAL"]["indices"] = [14];
+            $valida = false;
+        }
+
+         /**
+         * Primer consonante no inicial del nombre.
+         */
+        if (!in_array("NOMBRE_CONSONANTE_NO_INICIAL", $omitir_codigos)
+            && $caracter16_diferente)
+        {
+            $detalles["NOMBRE_CONSONANTE_NO_INICIAL"] = $codigos["NOMBRE_CONSONANTE_NO_INICIAL"];
+            $detalles["NOMBRE_CONSONANTE_NO_INICIAL"]["indices"] = [15];
+            $valida = false;
+        }
+
+        /**
+         * Homoclave.
+         */
+        if ($caracter17_diferente)
+        {
+            if (!in_array("HOMOCLAVE_HASTA_1999", $omitir_codigos)
+                && $curp_actual_letras[16] === '0' 
+                && !is_numeric($curp_letras[16]))
+            {
+                $detalles["HOMOCLAVE_HASTA_1999"] = $codigos["HOMOCLAVE_HASTA_1999"];
+                $detalles["HOMOCLAVE_HASTA_1999"]["indices"] = [16];
+                $valida = false;
+            }
+            else if (!in_array("HOMOCLAVE_DESDE_2000", $omitir_codigos)
+                    && $curp_actual_letras[16] === 'A' 
+                    && is_numeric($curp_letras[16]))
+            {
+                $detalles["HOMOCLAVE_DESDE_2000"] = $codigos["HOMOCLAVE_DESDE_2000"];
+                $detalles["HOMOCLAVE_DESDE_2000"]["indices"] = [16];
+                $valida = false;
+            };
+        }
+
+        /**
+         * Dígito verificador.
+         */
+        if ($caracter18_diferente)
+        {
+            if (!in_array("DIGITO_VERIFICADOR", $omitir_codigos)
+                && !is_numeric($curp_letras[17]))
+            {
+                $detalles["DIGITO_VERIFICADOR"] = $codigos["DIGITO_VERIFICADOR"];
+                $detalles["DIGITO_VERIFICADOR"]["indices"] = [17];
+                $valida = false;
+            }
+        }
+
+        return [
+            "curp_valida"     => $valida,
+            "fallos"          => $detalles,
+            "curp_formateada" => $this->remarcarDiferencias($curp_actual_letras, $curp_letras),
+        ];
+    }
+
+    /**
+     * Valida si la curp que se pasa como parámetro es igual
+     * a la generada por la clase.
+     * 
+     * @param  string  $curp                CURP a verificar.
+     * @param  boolean $comparacion_ligera  Si es verdadero valida que toda
+     *                                      la CURP sea idéntica, de lo 
+     *                                      contrario solo valida que sean
+     *                                      iguales los primeros 16 caracteres.
+     * @return boolean Retorna "true" si las CURP son 
+     *                 iguales, de lo contrario retorna
+     *                 "false";
+     */
+    // function igualA($curp, $comparacion_ligera = true)
+    // {
+    //     $curp     = mb_strtoupper(trim($curp));
+    //     $es_igual = false;
+
+    //     if ( ! $comparacion_ligera)
+    //     {
+    //         $es_igual = $this->curp === $curp;
+    //     }
+    //     else 
+    //     {
+    //         $es_igual = mb_substr($curp, 0, 16, 'utf-8') === mb_substr($this->curp, 0, 16, 'utf-8');
+    //     }
+
+    //     return $es_igual;
+    // }
+
+    /**
+     * Función que devuelve la CURP con las posiciones remarcadas
+     * donde hay diferencia.
+     * 
+     * @param Array    $curp_actual_letras Arreglo de caracteres de
+     *                                     la CURP generada por la
+     *                                     clase Curp.
+     * @param Array    $curp_letras        Arreglo de caracteres de
+     *                                     la CURP ingresada.
+     * @return string  CURP con diferencias remarcadas.
+     */
+    private function remarcarDiferencias($curp_actual_letras, $curp_letras)
+    {
+        $curp_formateada = [];
+        $apertura        = false;
+        $cierre          = false;
+        $longitud        = count($curp_letras) > 18 ? count($curp_letras) : 18;
+
+        for ($i = 0; $i < $longitud; $i++) 
+        { 
+            // Si es diferente el carácter, la posición 
+            // es inválida.
+            if ( ! isset($curp_letras[$i]) 
+                // Caracteres de más.
+                || ($longitud > 18 && $i > 17)
+                // Diferente carácter.
+                || $curp_actual_letras[$i] !== $curp_letras[$i])
+            {
+                if ( ! $apertura)
+                {
+                    $apertura = true;
+
+                    $curp_formateada[] = "[";
+                }
+
+                $curp_formateada[] = "?";
+            }
+            // Carácter igual.
+            else 
+            {
+                if ($apertura)
+                {
+                    $apertura = false;
+
+                    $curp_formateada[] = "]";
+                }
+
+                $curp_formateada[] = $curp_letras[$i];
+            }
+        }
+
+        // Si está abierto corchete, se cierra.
+        if ($apertura)
+        {
+            $curp_formateada[] = "]";
+        }
+
+        return implode('', $curp_formateada);
     }
 }
