@@ -1,5 +1,5 @@
 <?php
-require_once('../curp.php');
+require_once('./Curp.php');
 
 $nombre          = ''; 
 $apellidoPaterno = '';
@@ -8,13 +8,17 @@ $diaNacimiento   = ''; // XX
 $mesNacimiento   = ''; // XX
 $anioNacimiento  = ''; // XXXX
 $fecha           = "$anioNacimiento-$mesNacimiento-$diaNacimiento";
-$sexo            = ''; // H o M
-$entidad         = 0;  // 1-88
+$sexo            = ''; // X (H o M)
+$entidad         = ''; // XX (01-32, 87-88)
+
+$otra_curp   = '';
+$diferencias = [];
 
 try
 {
-    $persona = new Curp($nombre, $apellidoPaterno, $apellidoMaterno, $fecha, $sexo, $entidad);
-    $curp    = $persona->curp;
+    $curpObj     = new Curp($nombre, $apellidoPaterno, $apellidoMaterno, $fecha, $sexo, $entidad);
+    $curp        = $curpObj->curp;
+    $diferencias = $curpObj->comparar($otra_curp);
 }
 catch(Exception $e)
 {
@@ -34,5 +38,23 @@ catch(Exception $e)
     <h1>CURP</h1>
     <h2>Nombre: <?php echo $nombre . " " . $apellidoPaterno . " " . $apellidoMaterno; ?></h1>
     <h2>CURP: <?php echo $curp; ?></h2>
+    <br>
+    <h2>Comparación de CURP</h2>
+    <p>Diferencias encontradas al validar con la curp <strong><?php echo $otra_curp; ?></strong>:</p>
+    <p><strong><?php echo $diferencias["curp_formateada"] ?></strong></p>
+    <dl>
+        <?php
+        foreach ($diferencias["detalles"] as $codigo => $d) 
+        {
+        ?>
+
+        <dt><?php echo $codigo; ?></dt>
+        <dd>- Índices: <?php echo implode(', ', $d["indices"]); ?></dd>
+        <dd>- Mensaje: <?php echo $d["mensaje"]; ?></dd>
+
+        <?php  
+        }
+        ?>
+    </dl>
 </body>
 </html>
